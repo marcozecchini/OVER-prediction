@@ -2,3 +2,4 @@ start.py
 *.pdf
 /SVM/.idea/*
 /MultilinearRegression/.idea/
+/ANN/.idea/

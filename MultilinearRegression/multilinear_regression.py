@@ -26,11 +26,11 @@ def prepare_model_and_predict(values, dates, consumptions, predicted):
             if len(consumptions) > 24*i:
                 vect_temp += [consumptions[-24*i]]
             else:
-                vect_temp += [0]
+                vect_temp += [consumption]
         x_vector += [st.median(vect_temp)]
         #TODO MANCA LA TEMPERATURA
 
-        if (date.year == 2018 and date.month == 5 and date.day == 31):
+        if (date.year == 2018 and date.month == 5 and date.day == 30):
             X_test[date.hour].append(x_vector)
             Y_test[date.hour].append(consumption)
         else:
@@ -50,7 +50,7 @@ def train_and_predict(predicted):
         model.fit(X_train[hour], Y_train[hour])
 
         predicted += [model.predict(X_test[hour])]
-        print(predicted[hour])
+        print("{0} value: {1}".format(hour, predicted[hour]))
 
 
 file = open("../consumptions.txt") # tutti i consumi dal 1/6/2017 al 1/6/2018 alle due
