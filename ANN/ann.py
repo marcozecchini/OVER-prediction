@@ -68,9 +68,9 @@ def prepare_model_and_predict(values, dates, consumptions, predicted):
         #filling or the train set or the test set
         #day = (dt.datetime.now() - dt.timedelta(days=days))
         #if (date.year == day.year and date.month == day.month and date.day == day.day):
-        day = dt.datetime.now().replace(hour=0, minute=0, second=0, microsecond=0).timestamp() - 24 * 3600 * days
+        day = dt.datetime.now().replace(hour=0,minute=0,second=0,microsecond=0).timestamp() - 24*3600*days
         if (date.timestamp() >= day):
-            if (date.timestamp() > day + 24 * 3600 - 1): continue
+            if(date.timestamp() > day+24*3600-1): continue
             X_test[date.hour].append(x_vector)
             Y_test.append(consumption)
             test_date.append(date)
@@ -87,14 +87,21 @@ def prepare_model_and_predict(values, dates, consumptions, predicted):
 #di nuovo calcolo ora per ora, alleno un modello per ogni ora?
 def train_and_predict(predicted):
     for hour in X_train:
-        model = MLPRegressor(hidden_layer_sizes=10,activation="relu", batch_size=7)
+        model = MLPRegressor(hidden_layer_sizes=10,activation="relu", batch_size=12)
         model.fit(X_train[hour], Y_train[hour])
 
         predicted += [model.predict(X_test[hour])]
         print("{0} value: {1}".format(hour, predicted[hour]))
 
+################################################################################################################################################
+
+which_building = 1 #WHICH BUILDING DO YOU WANT TO PLOT?
+days = 15 #TO CHOOSE THE DAY TO PREDICT
 
 file = open("../real_consumption.txt")
+while(which_building > 1):
+    file.readline().strip()
+    which_building -= 1
 line = file.readline().strip()
 building = line.split("\t")[0]
 values = line.split("\t")[1].split(" ")[1:]
@@ -115,7 +122,6 @@ X_test = {}
 Y_train = {}
 Y_test = []
 test_date = []
-days = 8
 
 predict_y_array = []
 for i in range(0,24):

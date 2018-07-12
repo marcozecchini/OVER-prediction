@@ -59,8 +59,16 @@ def train_and_predict(predicted):
         predicted += [model.predict(X_test[hour])]
         print("{0} value: {1}".format(hour, predicted[hour]))
 
+################################################################################################################################################
+
+#TO BE SET CORRECTLY
+which_building = 1 #WHICH BUILDING DO YOU WANT TO PLOT?
+days = 15 #TO CHOOSE THE DAY TO PREDICT
 
 file = open("../real_consumption.txt")
+while(which_building > 1):
+    file.readline().strip()
+    which_building -= 1
 line = file.readline().strip()
 building = line.split("\t")[0]
 values = line.split("\t")[1].split(" ")[1:]
@@ -81,14 +89,12 @@ X_test = {}
 Y_train = {}
 Y_test = []
 test_date = []
-days = 10
+
 predict_y_array = []
 for i in range(0,24):
     X_train[i] = []
     X_test[i] = []
-    #Y_test[i] = []
     Y_train[i] = []
-
 
 prepare_model_and_predict(values, dates, consumptions, predict_y_array)
 accuracy = mean_accuracy_with_confidence_interval(predict_y_array, interval_size=0.5, Y_test=Y_test)

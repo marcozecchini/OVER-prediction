@@ -61,8 +61,16 @@ def train_and_predict(predicted):
         predicted += [SVR_model.predict(X_test[hour])]
         print("{0} value: {1}".format(hour, predicted[hour]))
 
+################################################################################################################################################
+
+
+which_building = 1 #WHICH BUILDING DO YOU WANT TO PLOT?
+days = 15 #TO CHOOSE THE DAY TO PREDICT
 
 file = open("../real_consumption.txt")
+while(which_building > 1):
+    file.readline().strip()
+    which_building -= 1
 line = file.readline().strip()
 building = line.split("\t")[0]
 values = line.split("\t")[1].split(" ")[1:]
@@ -83,7 +91,6 @@ X_test = {}
 Y_train = {}
 Y_test = []
 test_date = []
-days = 10
 
 predict_y_array = []
 for i in range(0,24):
