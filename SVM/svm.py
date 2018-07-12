@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import sklearn.svm as svm
 import calendar
 import statistics as st
+import numpy as np
 
 def mean_accuracy_with_confidence_interval(predict_array, interval_size, Y_test):
     accuracy = 0
@@ -11,6 +12,13 @@ def mean_accuracy_with_confidence_interval(predict_array, interval_size, Y_test)
         if (predict_array[hour] + value_interval >= Y_test[hour]) and (predict_array[hour] - value_interval <= Y_test[hour]):
             accuracy += 1
     return accuracy / 24
+
+def root_mean_square_deviation(predict_y_array, Y_test):
+    sum_squared = 0
+    for hour in range(0, len(predict_y_array)):
+        sum_squared += np.square(predict_y_array[hour] - Y_test[hour])
+    return  np.square(sum_squared/24)
+
 
 def prepare_model_and_predict(values, dates, consumptions, predicted):
     for element in values:
@@ -64,7 +72,7 @@ def train_and_predict(predicted):
 ################################################################################################################################################
 
 
-which_building = 1 #WHICH BUILDING DO YOU WANT TO PLOT?
+which_building = 2 #WHICH BUILDING DO YOU WANT TO PLOT?
 days = 15 #TO CHOOSE THE DAY TO PREDICT
 
 file = open("../real_consumption.txt")
@@ -100,7 +108,10 @@ for i in range(0,24):
 
 prepare_model_and_predict(values, dates, consumptions, predict_y_array)
 accuracy = mean_accuracy_with_confidence_interval(predict_y_array, interval_size=0.5, Y_test=Y_test)
-print("Mean accuracy: " + str(accuracy))
+RMSD = root_mean_square_deviation(predict_y_array, Y_test)
+print("Mean accuracy with confidence interval: " + str(accuracy))
+print("Root mean squared deviation: " + str(accuracy))
+
 
 plt.plot(test_date, Y_test, color='red')
 plt.plot(test_date, predict_y_array, color='blue')
