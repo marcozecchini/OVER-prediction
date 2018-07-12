@@ -17,6 +17,7 @@ def prepare_model_and_predict(values, dates, consumptions, predicted):
         temp = element.split(",")
         date = dt.datetime.fromtimestamp(int(temp[0]) / 1000)
         consumption = float(temp[1])
+
         #consumption of the same hour 24 hour before
         x_vector += [consumptions[-24] if len(consumptions) > 24 else 0]
 
@@ -28,11 +29,17 @@ def prepare_model_and_predict(values, dates, consumptions, predicted):
             else:
                 vect_temp += [consumption]
         x_vector += [st.median(vect_temp)]
-        #TODO MANCA LA TEMPERATURA
 
-        if (date.year == 2018 and date.month == 5 and date.day == 30):
+        x_vector += [float(temp[2])] if len(temp)>2 else None
+
+        #day = (dt.datetime.now() - dt.timedelta(days=days))
+        #if (date.year == day.year and date.month == day.month and date.day == day.day):
+        day = dt.datetime.now().replace(hour=0,minute=0,second=0,microsecond=0).timestamp() - 24 * 3600 * days
+        if (date.timestamp() >= day):
+            if (date.timestamp() > day + 24 * 3600 - 1): continue
             X_test[date.hour].append(x_vector)
-            Y_test[date.hour].append(consumption)
+            Y_test.append(consumption)
+            test_date.append(date)
         else:
             X_train[date.hour].append(x_vector)
             Y_train[date.hour].append(consumption)
@@ -53,30 +60,43 @@ def train_and_predict(predicted):
         print("{0} value: {1}".format(hour, predicted[hour]))
 
 
-file = open("../consumptions.txt") # tutti i consumi dal 1/6/2017 al 1/6/2018 alle due
+file = open("../real_consumption.txt")
 line = file.readline().strip()
 building = line.split("\t")[0]
-values = line.split("\t")[1].split(" ")
+values = line.split("\t")[1].split(" ")[1:]
+
+file2 = open("../temperature.txt")
+line2 = file2.readline().strip()
+building2 = line2.split("\t")[0]
+temperatures = line2.split("\t")[1].split(" ")[1:]
+
+if (len(values) == len(temperatures)):
+    for i in range(0, len(values)):
+        values[i] = values[i] + "," + temperatures[i].split(",")[1]
 
 dates = []
 consumptions = []
 X_train = {}
 X_test = {}
 Y_train = {}
-Y_test = {}
+Y_test = []
+test_date = []
+days = 10
 predict_y_array = []
 for i in range(0,24):
     X_train[i] = []
     X_test[i] = []
-    Y_test[i] = []
+    #Y_test[i] = []
     Y_train[i] = []
 
+
 prepare_model_and_predict(values, dates, consumptions, predict_y_array)
-accuracy = mean_accuracy_with_confidence_interval(predict_y_array, interval_size=0.3, Y_test=Y_test)
+accuracy = mean_accuracy_with_confidence_interval(predict_y_array, interval_size=0.5, Y_test=Y_test)
 print("Mean accuracy: " + str(accuracy))
 
-plt.plot(dates[-26:-2],consumptions[-26:-2], color='red')
-plt.plot(dates[-26:-2], predict_y_array)
+plt.plot(test_date, Y_test, color='red')
+plt.plot(test_date, predict_y_array, color='blue')
+plt.errorbar(test_date, predict_y_array, yerr=st.median(predict_y_array)[0] * 0.5, fmt='--o')
 plt.xlabel('dates')
 plt.ylabel('Kwh')
 plt.gcf().autofmt_xdate()
