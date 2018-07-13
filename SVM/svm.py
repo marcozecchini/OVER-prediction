@@ -109,14 +109,14 @@ for i in range(0,24): #each dictonary contains 24 lists, one per hour
     Y_train[i] = []
 
 prepare_model_and_predict(values, dates, consumptions, predict_y_array)
-accuracy = mean_accuracy_with_confidence_interval(predict_y_array, interval_size=0.5, Y_test=Y_test)
+accuracy = mean_accuracy_with_confidence_interval(predict_y_array, interval_size=0.6, Y_test=Y_test)
 RMSD = root_mean_square_deviation(predict_y_array, Y_test)
 print("Mean accuracy with confidence interval: " + str(accuracy))
 print("Root mean squared deviation: " + str(RMSD))
 
 plt.plot(test_date, Y_test, color='red')
 plt.plot(test_date, predict_y_array, color='blue')
-plt.errorbar(test_date, predict_y_array, yerr=st.median(predict_y_array)[0] * 0.5, fmt='--o')
+plt.errorbar(test_date, predict_y_array, yerr=st.median(predict_y_array)[0] * 0.6, fmt='--o')
 plt.xlabel('dates')
 plt.ylabel('Kwh')
 plt.gcf().autofmt_xdate()
