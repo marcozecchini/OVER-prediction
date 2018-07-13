@@ -2,19 +2,16 @@ import datetime as dt
 import requests
 
 #obtain the token
-payload = {'grant_type':'password', 'client_id':'mzecchini', 'client_secret':'e6e57da4-733a-4db3-9fe7-b106c6e5cc7c', 'username':'mzecchini', 'password':'Sapienza18'}
+payload = {'grant_type':'password', 'client_id':'mzecchini', 'client_secret':'<client-secret>', 'username':'mzecchini', 'password':'<password>'}
 reply = requests.post('https://sso.sparkworks.net/aa/oauth/token', payload)
 token = reply.json()['access_token']
 
-#obtain current timestamp and that one of one year ago
+#obtain timestamp of yesterday and that one of one year ago
 now = dt.datetime.now()
-now_timestamp = now.timestamp()
 yesterday = (now - dt.timedelta(days=1))
 yesterday_timestamp = yesterday.timestamp()
 year_ago = (now - dt.timedelta(days=365*2))
 year_ago_timestamp = year_ago.timestamp()
-print(int(now_timestamp)*1000)
-print(int(year_ago_timestamp)*1000)
 
 ids = []
 consumption_file = open('real_consumption.txt', 'w')

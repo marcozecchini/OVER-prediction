@@ -17,7 +17,7 @@ def root_mean_square_deviation(predict_y_array, Y_test):
     sum_squared = 0
     for hour in range(0, len(predict_y_array)):
         sum_squared += np.square(predict_y_array[hour] - Y_test[hour])
-    return  np.square(sum_squared/24)
+    return  np.sqrt(sum_squared/24)
 
 
 # the paper suggests: "they are substituted by the mean value of two neighbor points"
@@ -103,9 +103,9 @@ def train_and_predict(predicted):
 
 ################################################################################################################################################
 
-which_building = 2 #WHICH BUILDING DO YOU WANT TO PLOT?
-days = 15 #TO CHOOSE THE DAY TO PREDICT
-
+which_building = int(input("Which building do you want to model? Please just insert the number: ")) #WHICH BUILDING DO YOU WANT TO PLOT?
+days = int(input("How many days ago do you want to predict? Plese, insert the number: ")) #TO CHOOSE THE DAY TO PREDICT
+which_building2 = which_building
 file = open("../real_consumption.txt")
 while(which_building > 1):
     file.readline().strip()
@@ -115,6 +115,9 @@ building = line.split("\t")[0]
 values = line.split("\t")[1].split(" ")[1:]
 
 file2 = open("../temperature.txt")
+while(which_building2 > 1):
+    file2.readline().strip()
+    which_building2 -= 1
 line2 = file2.readline().strip()
 building2 = line2.split("\t")[0]
 temperatures = line2.split("\t")[1].split(" ")[1:]
@@ -123,15 +126,15 @@ if (len(values) == len(temperatures)):
     for i in range(0, len(values)):
         values[i] = values[i] + "," + temperatures[i].split(",")[1]
 
-dates = []
-consumptions = []
-X_train = {}
-X_test = {}
-Y_train = {}
-Y_test = []
-test_date = []
+dates = [] #Stores all the dates
+consumptions = [] #Stores all the consumptions
+X_train = {} #dictionary used to keep track of the training set in hours
+X_test = {} #dictionary used to keep track of the testing set in hours
+Y_train = {} #dictionary used to keep track of the traget values of the training set in hours
+Y_test = [] #list that stores the target values (consumptions) of the test set
+test_date = [] # list that stores the dates of the testing set
+predict_y_array = [] #list that stores the predicted consumptions
 
-predict_y_array = []
 for i in range(0,24):
     X_train[i] = []
     X_test[i] = []
@@ -141,7 +144,7 @@ prepare_model_and_predict(values, dates, consumptions, predict_y_array)
 accuracy = mean_accuracy_with_confidence_interval(predict_y_array, interval_size=0.5, Y_test=Y_test)
 RMSD = root_mean_square_deviation(predict_y_array, Y_test)
 print("Mean accuracy with confidence interval: " + str(accuracy))
-print("Root mean squared deviation: " + str(accuracy))
+print("Root mean squared deviation: " + str(RMSD))
 
 plt.plot(test_date, Y_test, color='red')
 plt.plot(test_date, predict_y_array, color='blue')
